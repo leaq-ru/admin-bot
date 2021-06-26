@@ -2,10 +2,13 @@ package bot
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/nnqq/scr-proto/codegen/go/parser"
 	"github.com/rs/zerolog"
+	"golang.org/x/sync/errgroup"
 	tb "gopkg.in/tucnak/telebot.v2"
+	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
@@ -69,21 +72,16 @@ https://leaq.ru/company/slug2`)
 			newline    = "\n"
 		)
 
-		urls := strings.Split(m.Payload, newline)
+		urls := filterEmpty(strings.Split(m.Payload, newline))
 		var slugs []string
 		for _, u := range urls {
-			switch u {
-			case "", " ", newline:
-				continue
-			default:
-				pu, err := url.Parse(u)
-				if err != nil || pu.Path == "" {
-					b.reply(m, invalidURL)
-					return
-				}
-
-				slugs = append(slugs, strings.TrimPrefix(pu.Path, "/company/"))
+			pu, err := url.Parse(u)
+			if err != nil || pu.Path == "" {
+				b.reply(m, invalidURL)
+				return
 			}
+
+			slugs = append(slugs, strings.TrimPrefix(pu.Path, "/company/"))
 		}
 
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -95,6 +93,28 @@ https://leaq.ru/company/slug2`)
 		if err != nil {
 			b.logger.Error().Err(err)
 			b.reply(m, "error: can't set hidden")
+			return
+		}
+
+		var eg errgroup.Group
+		for _, _u := range urls {
+			u := _u
+			eg.Go(func() error {
+				res, e := http.Get(u)
+				if e != nil {
+					return e
+				}
+
+				if res.StatusCode == http.StatusNotFound {
+					return nil
+				}
+
+				return errors.New("URL response not 404")
+			})
+		}
+		err = eg.Wait()
+		if err != nil {
+			b.reply(m, "error: URL post-hide check failed, seems companies not hidden")
 			return
 		}
 
@@ -127,4 +147,17 @@ func (b *bot) Start() {
 
 func (b *bot) Stop() {
 	b.bot.Stop()
+}
+
+func filterEmpty(text []string) []string {
+	var res []string
+	for _, s := range text {
+		switch s {
+		case "", " ", "\n":
+			continue
+		default:
+			res = append(res, s)
+		}
+	}
+	return res
 }

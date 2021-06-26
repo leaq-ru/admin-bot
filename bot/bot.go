@@ -89,6 +89,11 @@ https://leaq.ru/company/slug2`)
 			slugs = append(slugs, strings.TrimPrefix(pu.Path, "/company/"))
 		}
 
+		if len(slugs) == 0 {
+			b.reply(m, "no URLs provided")
+			return
+		}
+
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 
@@ -120,7 +125,7 @@ https://leaq.ru/company/slug2`)
 					return nil
 				}
 
-				return errors.New("Response not 404, URL=" + u)
+				return errors.New("response not 404, URL=" + u)
 			})
 		}
 		err = eg.Wait()

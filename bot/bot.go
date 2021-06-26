@@ -6,7 +6,6 @@ import (
 	"github.com/nnqq/scr-proto/codegen/go/parser"
 	"github.com/rs/zerolog"
 	tb "gopkg.in/tucnak/telebot.v2"
-	"log"
 	"net/url"
 	"strconv"
 	"strings"
@@ -27,7 +26,6 @@ func NewBot(logger zerolog.Logger, httpPort, webhookURL, token, rawAdminUserID s
 	}
 
 	publicURL := fmt.Sprintf("%s/%s", webhookURL, token)
-	log.Println(publicURL)
 	poller := &tb.Webhook{
 		Listen: "0.0.0.0:" + httpPort,
 		Endpoint: &tb.WebhookEndpoint{
@@ -61,8 +59,8 @@ func (b *bot) initHandlers() {
 	b.bot.Handle("/help", func(m *tb.Message) {
 		b.reply(m, `Set company hidden
 /h
-https://leaq.ru/slug1
-https://leaq.ru/slug2`)
+https://leaq.ru/company/slug1
+https://leaq.ru/company/slug2`)
 	})
 
 	b.bot.Handle("/h", func(m *tb.Message) {
@@ -84,7 +82,7 @@ https://leaq.ru/slug2`)
 					return
 				}
 
-				slugs = append(slugs, pu.Path)
+				slugs = append(slugs, strings.TrimPrefix(pu.Path, "company/"))
 			}
 		}
 

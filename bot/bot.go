@@ -6,6 +6,7 @@ import (
 	"github.com/nnqq/scr-proto/codegen/go/parser"
 	"github.com/rs/zerolog"
 	tb "gopkg.in/tucnak/telebot.v2"
+	"log"
 	"net/url"
 	"strconv"
 	"strings"
@@ -25,10 +26,12 @@ func NewBot(logger zerolog.Logger, httpPort, webhookURL, token, rawAdminUserID s
 		return nil, err
 	}
 
+	publicURL := fmt.Sprintf("%s/%s", webhookURL, token)
+	log.Println(publicURL)
 	poller := &tb.Webhook{
 		Listen: "0.0.0.0:" + httpPort,
 		Endpoint: &tb.WebhookEndpoint{
-			PublicURL: fmt.Sprintf("%s/%s", webhookURL, token),
+			PublicURL: publicURL,
 		},
 	}
 	onlyMe := tb.NewMiddlewarePoller(poller, func(upd *tb.Update) bool {

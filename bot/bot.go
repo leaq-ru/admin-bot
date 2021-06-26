@@ -100,7 +100,13 @@ https://leaq.ru/company/slug2`)
 		for _, _u := range urls {
 			u := _u
 			eg.Go(func() error {
-				res, e := http.Get(u)
+				req, e := http.NewRequest(http.MethodGet, u, nil)
+				if e != nil {
+					return e
+				}
+				req.Header.Set("User-Agent", "Bot")
+
+				res, e := new(http.Client).Do(req)
 				if e != nil {
 					return e
 				}
@@ -109,12 +115,13 @@ https://leaq.ru/company/slug2`)
 					return nil
 				}
 
-				return errors.New("URL response not 404")
+				return errors.New("Response not 404, URL=" + u)
 			})
 		}
 		err = eg.Wait()
 		if err != nil {
-			b.reply(m, "error: URL post-hide check failed, seems companies not hidden")
+			b.logger.Error().Err(err)
+			b.reply(m, "error: URL post-hide check failed, seems urls response not 404")
 			return
 		}
 

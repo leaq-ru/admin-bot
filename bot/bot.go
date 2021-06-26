@@ -66,13 +66,18 @@ https://leaq.ru/company/slug1
 https://leaq.ru/company/slug2`)
 	})
 
-	b.bot.Handle("/h", func(m *tb.Message) {
+	const hCmd = "/h"
+	b.bot.Handle(hCmd, func(m *tb.Message) {
 		const (
 			invalidURL = "error: invalid URL"
 			newline    = "\n"
 		)
 
-		urls := filterEmpty(strings.Split(m.Payload, newline))
+		if m.Text == "" {
+			return
+		}
+
+		urls := filterCmd(hCmd, strings.Split(m.Text, newline))
 		var slugs []string
 		for _, u := range urls {
 			pu, err := url.Parse(u)
@@ -156,11 +161,11 @@ func (b *bot) Stop() {
 	b.bot.Stop()
 }
 
-func filterEmpty(text []string) []string {
+func filterCmd(cmd string, text []string) []string {
 	var res []string
 	for _, s := range text {
 		switch s {
-		case "", " ", "\n":
+		case "", " ", "\n", cmd:
 			continue
 		default:
 			res = append(res, s)

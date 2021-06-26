@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin-bot
+  labels:
+    app: admin-bot
+spec:
+  ports:
+    - port: 80
+      protocol: TCP
+  selector:
+    app: admin-bot

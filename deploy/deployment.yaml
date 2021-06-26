@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-bot
+  labels:
+    app: admin-bot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: admin-bot
+  template:
+    metadata:
+      labels:
+        app: admin-bot
+      annotations:
+        linkerd.io/inject: enabled
+        config.linkerd.io/proxy-cpu-request: 10m
+        config.linkerd.io/proxy-memory-request: 10Mi
+    spec:
+      imagePullSecrets:
+        - name: ghcr
+      containers:
+        - name: admin-bot
+          image: busybox
+          command:
+            - /app/servicebin
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 81
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 81
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 15m
+              memory: 15Mi
+            limits:
+              cpu: 50m
+              memory: 50Mi
+          env:
+            - name: HTTP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: port
+                  name: http
+            - name: TELEGRAM_ADMINBOTWEBHOOKURL
+              valueFrom:
+                configMapKeyRef:
+                  key: adminbotwebhookurl
+                  name: telegram
+            - name: TELEGRAM_ADMINBOTTOKEN
+              valueFrom:
+                secretKeyRef:
+                  key: adminbottoken
+                  name: telegram
+            - name: TELEGRAM_ADMINUSERID
+              valueFrom:
+                secretKeyRef:
+                  key: adminuserid
+                  name: telegram
+            - name: SERVICE_PARSER
+              valueFrom:
+                configMapKeyRef:
+                  key: parser
+                  name: service
+            - name: LOGLEVEL
+              value: error

@@ -15,8 +15,8 @@ spec:
         app: admin-bot
       annotations:
         linkerd.io/inject: enabled
-        config.linkerd.io/proxy-cpu-request: 10m
-        config.linkerd.io/proxy-memory-request: 10Mi
+        config.linkerd.io/proxy-cpu-request: 1m
+        config.linkerd.io/proxy-memory-request: 4Mi
     spec:
       imagePullSecrets:
         - name: ghcr
@@ -39,11 +39,11 @@ spec:
               protocol: TCP
           resources:
             requests:
-              cpu: 15m
-              memory: 15Mi
+              cpu: 1m
+              memory: 11Mi
             limits:
-              cpu: 50m
-              memory: 50Mi
+              cpu: "1"
+              memory: 1Gi
           env:
             - name: HTTP_PORT
               valueFrom:

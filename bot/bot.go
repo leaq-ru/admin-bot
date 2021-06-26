@@ -82,7 +82,7 @@ https://leaq.ru/company/slug2`)
 					return
 				}
 
-				slugs = append(slugs, strings.TrimPrefix(pu.Path, "company/"))
+				slugs = append(slugs, strings.TrimPrefix(pu.Path, "/company/"))
 			}
 		}
 

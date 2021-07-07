@@ -1,14 +1,26 @@
 package config
 
 type Config struct {
-	HTTP     http
-	Telegram telegram
-	Service  service
-	LogLevel string `envconfig:"LOGLEVEL"`
+	HTTP        http
+	STAN        stan
+	NATS        nats
+	Telegram    telegram
+	Service     service
+	LogLevel    string `envconfig:"LOGLEVEL"`
+	ServiceName string
 }
 
 type http struct {
 	Port string `envconfig:"HTTP_PORT"`
+}
+
+type stan struct {
+	ClusterID               string `envconfig:"STAN_CLUSTERID"`
+	SubjectReviewModeration string `envconfig:"STAN_SUBJECTREVIEWMODERATION"`
+}
+
+type nats struct {
+	URL string `envconfig:"NATS_URL"`
 }
 
 type telegram struct {

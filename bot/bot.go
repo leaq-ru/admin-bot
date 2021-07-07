@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/nats-io/stan.go"
 	"github.com/nnqq/scr-proto/codegen/go/parser"
 	"github.com/rs/zerolog"
 	"golang.org/x/sync/errgroup"
@@ -57,6 +58,15 @@ func NewBot(logger zerolog.Logger, httpPort, webhookURL, token, rawAdminUserID s
 		logger:        logger.With().Str("package", "bot").Logger(),
 	}, nil
 }
+
+func (b *bot) Serve(ctx context.Context) {
+	b.initHandlers()
+	b.bot.Start()
+	<-ctx.Done()
+	b.bot.Stop()
+}
+
+func (b *bot) ReviewModeration(msg *stan.Msg) {}
 
 func (b *bot) initHandlers() {
 	b.bot.Handle("/help", func(m *tb.Message) {
@@ -155,15 +165,6 @@ func (b *bot) reply(m *tb.Message, text string) bool {
 		return false
 	}
 	return true
-}
-
-func (b *bot) Start() {
-	b.initHandlers()
-	b.bot.Start()
-}
-
-func (b *bot) Stop() {
-	b.bot.Stop()
 }
 
 func filterCmd(cmd string, text []string) []string {

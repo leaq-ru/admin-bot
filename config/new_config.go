@@ -2,7 +2,13 @@ package config
 
 import "github.com/kelseyhightower/envconfig"
 
-func NewConfig() (cfg Config, err error) {
-	err = envconfig.Process("", &cfg)
-	return
+func NewConfig() (Config, error) {
+	var cfg Config
+	err := envconfig.Process("", &cfg)
+	if err != nil {
+		return Config{}, err
+	}
+
+	cfg.ServiceName = "admin-bot"
+	return cfg, nil
 }

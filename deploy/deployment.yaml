@@ -15,6 +15,7 @@ spec:
         app: admin-bot
       annotations:
         linkerd.io/inject: enabled
+        config.linkerd.io/skip-outbound-ports: "80,443,4222"
         config.linkerd.io/proxy-cpu-request: 1m
         config.linkerd.io/proxy-memory-request: 4Mi
     spec:

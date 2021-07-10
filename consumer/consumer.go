@@ -52,7 +52,7 @@ func (c *consumer) Serve(ctx context.Context) {
 }
 
 func (c *consumer) subscribe() error {
-	sub, err := c.stan.Subscribe(c.subject, c.cb)
+	sub, err := c.stan.Subscribe(c.subject, c.cb, stan.SetManualAckMode())
 	if err != nil {
 		c.logger.Error().Err(err).Send()
 		return err

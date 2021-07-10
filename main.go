@@ -27,7 +27,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	companyClient, err := call.NewClients(cfg.Service.Parser)
+	companyClient, reviewClient, err := call.NewClients(cfg.Service.Parser)
 	logg.Must(err)
 
 	b, err := bot.NewBot(
@@ -37,6 +37,7 @@ func main() {
 		cfg.Telegram.AdminBotToken,
 		cfg.Telegram.AdminUserID,
 		companyClient,
+		reviewClient,
 	)
 	logg.Must(err)
 

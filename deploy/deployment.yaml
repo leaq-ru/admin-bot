@@ -50,6 +50,21 @@ spec:
                 configMapKeyRef:
                   key: port
                   name: http
+            - name: STAN_CLUSTERID
+              valueFrom:
+                configMapKeyRef:
+                  key: clusterid
+                  name: stan
+            - name: NATS_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: url
+                  name: nats
+            - name: STAN_SUBJECTREVIEWMODERATION
+              valueFrom:
+                configMapKeyRef:
+                  key: subjectreviewmoderation
+                  name: stan
             - name: TELEGRAM_ADMINBOTWEBHOOKURL
               valueFrom:
                 configMapKeyRef:

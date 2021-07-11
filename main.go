@@ -44,7 +44,7 @@ func main() {
 	sc, err := stan.NewConn(cfg.ServiceName, cfg.STAN.ClusterID, cfg.NATS.URL)
 	logg.Must(err)
 
-	cons, err := consumer.NewConsumer(logg.ZL, sc, cfg.STAN.SubjectReviewModeration, b.ReviewModeration)
+	cons, err := consumer.NewConsumer(logg.ZL, sc, cfg.STAN.SubjectReviewModeration, 1, b.ReviewModeration)
 	logg.Must(err)
 
 	go healthz.Start(81)

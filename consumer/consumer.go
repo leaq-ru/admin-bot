@@ -8,21 +8,23 @@ import (
 )
 
 type consumer struct {
-	logger  zerolog.Logger
-	stan    stan.Conn
-	subject string
-	sub     stan.Subscription
-	cb      cb
+	logger      zerolog.Logger
+	stan        stan.Conn
+	subject     string
+	sub         stan.Subscription
+	maxInFlight int
+	cb          cb
 }
 
 type cb = func(msg *stan.Msg)
 
-func NewConsumer(logger zerolog.Logger, stan stan.Conn, subject string, cb cb) (*consumer, error) {
+func NewConsumer(logger zerolog.Logger, stan stan.Conn, subject string, maxInFlight int, cb cb) (*consumer, error) {
 	c := &consumer{
-		logger:  logger.With().Str("package", "consumer").Str("subject", subject).Logger(),
-		stan:    stan,
-		subject: subject,
-		cb:      cb,
+		logger:      logger.With().Str("package", "consumer").Str("subject", subject).Logger(),
+		stan:        stan,
+		subject:     subject,
+		maxInFlight: maxInFlight,
+		cb:          cb,
 	}
 	err := c.subscribe()
 	if err != nil {
@@ -52,7 +54,13 @@ func (c *consumer) Serve(ctx context.Context) {
 }
 
 func (c *consumer) subscribe() error {
-	sub, err := c.stan.Subscribe(c.subject, c.cb, stan.SetManualAckMode())
+	sub, err := c.stan.Subscribe(
+		c.subject,
+		c.cb,
+		stan.SetManualAckMode(),
+		stan.DurableName(c.subject),
+		stan.MaxInflight(c.maxInFlight),
+	)
 	if err != nil {
 		c.logger.Error().Err(err).Send()
 		return err

@@ -5,7 +5,6 @@ import (
 	"github.com/nnqq/scr-admin-bot/bot"
 	"github.com/nnqq/scr-admin-bot/call"
 	"github.com/nnqq/scr-admin-bot/config"
-	"github.com/nnqq/scr-admin-bot/consumer"
 	"github.com/nnqq/scr-admin-bot/healthz"
 	"github.com/nnqq/scr-admin-bot/logger"
 	"github.com/nnqq/scr-admin-bot/stan"
@@ -44,7 +43,14 @@ func main() {
 	sc, err := stan.NewConn(cfg.ServiceName, cfg.STAN.ClusterID, cfg.NATS.URL)
 	logg.Must(err)
 
-	cons, err := consumer.NewConsumer(logg.ZL, sc, cfg.STAN.SubjectReviewModeration, 1, b.ReviewModeration)
+	cons, err := stan.NewConsumer(
+		logg.ZL,
+		sc,
+		cfg.STAN.SubjectReviewModeration,
+		cfg.ServiceName,
+		0,
+		b.ReviewModeration,
+	)
 	logg.Must(err)
 
 	go healthz.Start(81)

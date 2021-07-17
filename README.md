@@ -1,1 +1,1 @@
-# scr-admin-bot
+# admin-bot

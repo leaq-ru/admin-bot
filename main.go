@@ -2,13 +2,13 @@ package main
 
 import (
 	"context"
-	"github.com/nnqq/scr-admin-bot/bot"
-	"github.com/nnqq/scr-admin-bot/call"
-	"github.com/nnqq/scr-admin-bot/config"
-	"github.com/nnqq/scr-admin-bot/healthz"
-	"github.com/nnqq/scr-admin-bot/logger"
-	"github.com/nnqq/scr-admin-bot/stan"
-	graceful "github.com/nnqq/scr-lib-graceful"
+	"github.com/leaq-ru/admin-bot/bot"
+	"github.com/leaq-ru/admin-bot/call"
+	"github.com/leaq-ru/admin-bot/config"
+	"github.com/leaq-ru/admin-bot/healthz"
+	"github.com/leaq-ru/admin-bot/logger"
+	"github.com/leaq-ru/admin-bot/stan"
+	graceful "github.com/leaq-ru/lib-graceful"
 	"log"
 	"sync"
 )

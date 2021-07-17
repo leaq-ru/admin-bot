@@ -1,7 +1,7 @@
 package call
 
 import (
-	"github.com/nnqq/scr-proto/codegen/go/parser"
+	"github.com/leaq-ru/proto/codegen/go/parser"
 	"google.golang.org/grpc"
 )
 
